@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div class="location">
+
+        <select name="country" id="city-selector">
+            <option value="Cali" selected>Current location</option>
+        </select>
+
+        <h1 class="location-timezone">Timezone</h1>
+    </div>
+    <div class="temperature">
+        <div class="div">
+            <canvas id="temp-icon" width="380" height="380"></canvas>
+            <div class="degree-section">
+                <h2 class="temperature-degree">34</h2>
+                <span>F</span>
+            </div>
+        </div>
+        <div class="temperature-description">It's fucking cold</div>
+    </div>
+</body>
+<script src="js/skycons.js"></script>
+<script src="./main.js"></script>
+
+</html>
