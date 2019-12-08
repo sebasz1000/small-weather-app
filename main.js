@@ -9,6 +9,9 @@ window.addEventListener('load', () => {
     let citySelector = document.querySelector('#city-selector');
     let currentUnit = 'F'
     let colombianCitiesInfo = null;
+    let loader = document.querySelector('.loader');
+    let currentState = ''
+
 
     start();
     temperatureSection.addEventListener('click', () => {
@@ -19,6 +22,18 @@ window.addEventListener('load', () => {
         renderCityInfo(colombianCitiesInfo.find(city => city.name.toLowerCase() === e.target.value.toLowerCase()), temperatureSpan.textContent);
     })
 
+
+
+    function setVideoBack(summary) {
+        const states = ['rain', 'posible', 'sunny', 'cloudy', 'overcast', 'humid']
+        let newState = states.find(state => summary.toLowerCase().includes(state))
+        if (newState != currentState) {
+            document.querySelector('#videoBackground').src = `./video/${newState}.mp4`
+            currentState = newState;
+        }
+
+
+    }
     async function start() {
         try {
             temperatureSpan.textContent = currentUnit;
@@ -89,17 +104,32 @@ window.addEventListener('load', () => {
         })
     }
 
+    function clearHtml() {
+        temperatureValue.textContent = '';
+        temperatureSummary.textContent = 'Loading info...'
+        locationTimezone.textContent = citySelector.value;
+    }
+
     async function renderCityInfo(city, currentUnit) {
         console.log(`Rendering ${city.name} city:`)
         try {
+            let tempIcon = document.querySelector('#temp-icon');
+            tempIcon.style.display = 'none'
+            temperatureSpan.style.display = 'none';
+            clearHtml()
+            loader.style.display = 'block'
             const cityWeatherReport = await getCityWeather(city)
+            loader.style.display = 'none'
+            temperatureSpan.style.display = 'block'
+            tempIcon.style.display = 'block'
             const { temperature, summary, icon } = cityWeatherReport
             console.log("current unit: " + currentUnit)
             console.log("raw temperature: " + temperature)
+            setVideoBack(summary);
             temperatureValue.textContent = (currentUnit === 'C') ? Math.round((temperature - 32) * (5 / 9)) : Math.round(temperature);
             temperatureSummary.textContent = summary;
             locationTimezone.textContent = city.name;
-            setIcons(icon, document.querySelector('#temp-icon'));
+            setIcons(icon, tempIcon);
         } catch (e) {
             console.log(e);
         }

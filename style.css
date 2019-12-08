@@ -13,8 +13,21 @@ body{
     align-items: center;
     background: linear-gradient(rgb(47,150,163),rgb(48,62,143));
     color: white;
+    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,1));
 }
 
+main{
+    z-index: 10;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+h1{
+    text-shadow: 1px 1px 9px #000;
+    font-size: 4em;
+    text-align: center;
+}
 .location, .temperature{
     height: 50vh;
     width: 50%;
@@ -25,6 +38,9 @@ body{
     /*border: 1px solid green;*/
 }
 
+.temperature-description{
+   text-shadow: 1px 1px 9px #000;
+}
 .location{
     height: 20vh;
 }
@@ -33,13 +49,69 @@ body{
     align-items: center;
     cursor: pointer;
     justify-content: center;
+    
 }
 
 .degree-section span{
     margin: 10px;
     font-size: 30px;
+    text-shadow: 1px 1px 9px #000;
 }
 
 .degree-section h2{
     font-size: 40px;
+    text-shadow: 1px 1px 9px #000;
+}
+
+#videoBackground{
+    position: fixed;
+    right: 0;
+    top: 0;
+    min-width: 100%;
+    min-height: 100%;
+    opacity: 0.8;
+}
+
+select{
+    -webkit-appearance: none;
+         -moz-appearance: none;
+          appearance: none;
+    background: transparent;
+    font-size: 1.2em;
+    color: white;
+    transition: all ease-in 200ms;
+    opacity: 0.8;
+    padding: 0.8em 1.2em;
+    background-image:
+    linear-gradient(45deg, transparent 50%, white 50%),
+    linear-gradient(135deg, white 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+  background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px),
+    calc(100% - 2.5em) 0.5em;
+  background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+  background-repeat: no-repeat;
+  margin-bottom: 3em;
+}
+
+
+select:hover{
+    background-color: rgba(255,255,255, 0.5);
+    cursor: pointer;
+    color: black;
+    opacity:1;
+    background-image:
+    linear-gradient(45deg, transparent 50%, black 50%),
+    linear-gradient(135deg, black 50%, transparent 50%),
+    linear-gradient(to right, black, black);
+}
+
+.loader{
+    position: absolute;
+    top: 40%;
+    display: none;
 }
