@@ -7,27 +7,29 @@ window.addEventListener('load', () => {
     let temperatureSection = document.querySelector('.degree-section');
     let temperatureSpan = document.querySelector('.degree-section span');
     let citySelector = document.querySelector('#city-selector');
-    let selectedCity = {
-        name: "",
-        lat: 0,
-        lng: 0,
-        temperature: '',
-        summary: '',
-        icon: ''
-    }
+    let currentUnit = 'F'
+    let colombianCitiesInfo = null;
 
-    insertCities();
-
-    citySelector.addEventListener('change', async (e) => {
-        console.log(e.target.value);
-        let cities = await getCitiesInfo();
-        const { name, lat, lng } = cities.filter(city => city.name.toLowerCase() === e.target.value.toLowerCase() && city)[0];
-        selectedCity.name = name;
-        selectedCity.lat = lat;
-        selectedCity.lng = lng;
-        console.log(selectedCity);
-        renderCityInfo(selectedCity);
+    start();
+    temperatureSection.addEventListener('click', () => {
+        changeTemperatureUnit(temperatureValue.textContent, temperatureSpan.textContent)
     })
+
+    citySelector.addEventListener('change', (e) => {
+        renderCityInfo(colombianCitiesInfo.find(city => city.name.toLowerCase() === e.target.value.toLowerCase()), temperatureSpan.textContent);
+    })
+
+    async function start() {
+        try {
+            temperatureSpan.textContent = currentUnit;
+            colombianCitiesInfo = await getCitiesInfo(); // contains collection of cities with lang and long info
+            insertCities(colombianCitiesInfo);
+            let defaultCity = colombianCitiesInfo.find(city => city.name.toLowerCase() === citySelector.value.toLowerCase())
+            renderCityInfo(defaultCity, currentUnit);
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     function setIcons(icon, iconID) {
         let skycons = new Skycons({ color: "white" });
@@ -36,18 +38,19 @@ window.addEventListener('load', () => {
         return skycons.set(iconID, Skycons[currentIcon]);
     }
 
-    function changeTemperatureUnit(farenheit) {
-        temperatureSection.addEventListener('click', () => {
-            if (temperatureSpan.textContent === 'F') {
-                temperatureValue.textContent = Math.floor((farenheit - 32) * (5 / 9));      //
-                temperatureSpan.textContent = 'C'
-            } else {
-                temperatureValue.textContent = farenheit;
-                temperatureSpan.textContent = 'F'
-            }
-        });
+    function changeTemperatureUnit(value, currentUnit) {
+        console.log('Old temperature unit: ' + currentUnit)
+        if (currentUnit === 'F') {
+            temperatureValue.textContent = Math.round((value - 32) * (5 / 9));
+            currentUnit = 'C'
+        } else {
+            temperatureValue.textContent = Math.round((value * 9 / 5) + 32);
+            currentUnit = 'F'
+        }
+        temperatureSpan.textContent = currentUnit;
+        console.log('Current temperature Unit: ' + currentUnit)
     }
-
+    // fech all the world's countries info and returns just colombian ones
     function getCitiesInfo() {
         return new Promise((resolve, reject) => {
             fetch('https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json')
@@ -57,22 +60,17 @@ window.addEventListener('load', () => {
                 .then(data => {
                     data = data.filter(city => { if (city.country === "CO") return city })
                     resolve(data);
-                })
+                }).then(console.log('Colombian cities were loaded correctly!'));
         });
     }
-
-    async function insertCities() {
-        try {
-            let cities = await getCitiesInfo();
-            cities.forEach(city => {
-                let option = document.createElement('option');
-                option.setAttribute('value', city.name);
-                option.textContent = city.name;
-                document.querySelector('#city-selector').appendChild(option);
-            })
-        } catch (e) {
-            console.log(e);
-        }
+    //appends option type element to the city selector element
+    function insertCities(cities) {
+        cities.reverse().forEach(city => {
+            let option = document.createElement('option');
+            option.setAttribute('value', city.name);
+            option.textContent = city.name;
+            document.querySelector('#city-selector').appendChild(option);
+        })
     }
 
     function getCityWeather(city) {
@@ -91,15 +89,17 @@ window.addEventListener('load', () => {
         })
     }
 
-    async function renderCityInfo(city) {
+    async function renderCityInfo(city, currentUnit) {
+        console.log(`Rendering ${city.name} city:`)
         try {
             const cityWeatherReport = await getCityWeather(city)
             const { temperature, summary, icon } = cityWeatherReport
-            temperatureValue.textContent = temperature;
+            console.log("current unit: " + currentUnit)
+            console.log("raw temperature: " + temperature)
+            temperatureValue.textContent = (currentUnit === 'C') ? Math.round((temperature - 32) * (5 / 9)) : Math.round(temperature);
             temperatureSummary.textContent = summary;
             locationTimezone.textContent = city.name;
             setIcons(icon, document.querySelector('#temp-icon'));
-            changeTemperatureUnit(temperature);
         } catch (e) {
             console.log(e);
         }
